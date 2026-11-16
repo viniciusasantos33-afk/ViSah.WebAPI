@@ -1,0 +1,379 @@
+# ViSah API - execute as requisicoes individualmente no Rider
+@baseUrl = http://localhost:5291
+
+# IDs: substitua pelos valores retornados pela API
+@userId = 1
+@artistId = 1
+@albumId = 1
+@trackId = 1
+@genreId = 1
+@moodId = 1
+@playlistId = 1
+
+# Cole aqui os tokens retornados por POST /api/auth/login
+@userToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjMiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiTm9tZSBkbyB1c3VhcmlvIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvZW1haWxhZGRyZXNzIjoidXN1YXJpb0BleGFtcGxlLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3OTQ4NDk4ODgsImlzcyI6IlZpU2FoIiwiYXVkIjoiVmlTYWguQ2xpZW50In0.flPDnOOvR3e_HdrBsT7D8xHUy4BFcjjirRxKlb8dsxs
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiVmluaWNpdXMgU2FudG9zIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvZW1haWxhZGRyZXNzIjoidmluaWNpdXNhbHZlc3JvY2hhZG9zYW50b3NAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQWRtaW4iLCJleHAiOjE3OTQ4NDkxMjMsImlzcyI6IlZpU2FoIiwiYXVkIjoiVmlTYWguQ2xpZW50In0.EMflLySFZRI9atjtoZPROaMY2D9khNuENuUGmspwSNQ
+
+### FLUXO 1 - criar conta
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Nome do usuario",
+  "email": "usuario2@example.com",
+  "password": "Senha123!"
+}
+
+### FLUXO 1 - entrar e copiar o token da resposta
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "usuario@example.com",
+  "password": "Senha123!"
+}
+
+### FLUXO 1 - encerrar sessao NAO USAR
+POST {{baseUrl}}/api/auth/logout
+Authorization: Bearer {{userToken}}
+
+### FLUXO 2 - consultar catalogo de faixas
+GET {{baseUrl}}/api/tracks?page=1&pageSize=20
+Accept: application/json
+
+### FLUXO 2 - pesquisar faixa ou artista
+GET {{baseUrl}}/api/tracks?search=demo&page=1&pageSize=20
+Accept: application/json
+
+### FLUXO 2 - filtrar catalogo por genero e mood
+GET {{baseUrl}}/api/tracks?genreId={{genreId}}&moodId={{moodId}}
+Accept: application/json
+
+### FLUXO 2 - detalhes de uma faixa
+GET {{baseUrl}}/api/tracks/{{trackId}}
+Accept: application/json
+
+### FLUXO 2 - obter audio (a API redireciona para a URL HTTPS cadastrada)
+GET {{baseUrl}}/api/tracks/{{trackId}}/audio
+Accept: */*
+
+### FLUXO 2 - registrar reproducao (requer usuario autenticado)
+POST {{baseUrl}}/api/tracks/{{trackId}}/play
+Authorization: Bearer {{userToken}}
+
+### FLUXO 2 - listar artistas
+GET {{baseUrl}}/api/artists
+Accept: application/json
+
+### FLUXO 2 - detalhes de artista
+GET {{baseUrl}}/api/artists/{{artistId}}
+Accept: application/json
+
+### FLUXO 2 - listar albuns
+GET {{baseUrl}}/api/albums
+Accept: application/json
+
+### FLUXO 2 - detalhes de album
+GET {{baseUrl}}/api/albums/{{albumId}}
+Accept: application/json
+
+### FLUXO 2 - listar generos
+GET {{baseUrl}}/api/genres
+Accept: application/json
+
+### FLUXO 2 - listar moods
+GET {{baseUrl}}/api/moods
+Accept: application/json
+
+### FLUXO 2 - recomendacoes por mood e genero (requer usuario autenticado)
+GET {{baseUrl}}/api/recommendations?moodId={{moodId}}&genreId={{genreId}}
+Authorization: Bearer {{userToken}}
+Accept: application/json
+
+### FLUXO 2 - recomendacoes por mood (requer usuario autenticado)
+GET {{baseUrl}}/api/recommendations?moodId={{moodId}}
+Authorization: Bearer {{userToken}}
+Accept: application/json
+
+### FLUXO 3 - consultar meu perfil
+GET {{baseUrl}}/api/profile
+Authorization: Bearer {{userToken}}
+Accept: application/json
+
+### FLUXO 3 - atualizar meu perfil
+PUT {{baseUrl}}/api/profile
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "name": "Nome atualizado",
+  "photoUrl": "https://example.com/profile.jpg",
+  "password": null
+}
+
+### FLUXO 3 - listar meus favoritos
+GET {{baseUrl}}/api/favorites
+Authorization: Bearer {{userToken}}
+Accept: application/json
+
+### FLUXO 3 - favoritar faixa
+POST {{baseUrl}}/api/favorites/tracks/{{trackId}}
+Authorization: Bearer {{userToken}}
+
+### FLUXO 3 - remover faixa dos favoritos
+DELETE {{baseUrl}}/api/favorites/tracks/{{trackId}}
+Authorization: Bearer {{userToken}}
+
+### FLUXO 3 - favoritar artista
+POST {{baseUrl}}/api/favorites/artists/{{artistId}}
+Authorization: Bearer {{userToken}}
+
+### FLUXO 3 - deixar de favoritar artista
+DELETE {{baseUrl}}/api/favorites/artists/{{artistId}}
+Authorization: Bearer {{userToken}}
+
+### FLUXO 3 - listar minhas playlists
+GET {{baseUrl}}/api/playlists
+Authorization: Bearer {{userToken}}
+Accept: application/json
+
+### FLUXO 3 - criar playlist
+POST {{baseUrl}}/api/playlists
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "name": "Minha playlist"
+}
+
+### FLUXO 3 - renomear playlist
+PUT {{baseUrl}}/api/playlists/{{playlistId}}
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "name": "Playlist renomeada"
+}
+
+### FLUXO 3 - adicionar faixa a playlist
+POST {{baseUrl}}/api/playlists/{{playlistId}}/tracks
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "trackId": {{trackId}}
+}
+
+### FLUXO 3 - reordenar faixas (informe todos os IDs da playlist)
+PUT {{baseUrl}}/api/playlists/{{playlistId}}/tracks/order
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "trackIds": [{{trackId}}]
+}
+
+### FLUXO 3 - remover faixa de playlist
+DELETE {{baseUrl}}/api/playlists/{{playlistId}}/tracks/{{trackId}}
+Authorization: Bearer {{userToken}}
+
+### FLUXO 3 - excluir playlist
+DELETE {{baseUrl}}/api/playlists/{{playlistId}}
+Authorization: Bearer {{userToken}}
+
+### FLUXO 4 - preparar acesso Admin
+# O cadastro publico cria sempre usuario comum. Promova uma conta pelo SSMS:
+# UPDATE dbo.Users SET Role = 'Admin' WHERE Email = 'admin@example.com';
+# Depois faca login novamente e cole o token em @adminToken.
+
+### FLUXO 4 - listar usuarios (Admin)
+GET {{baseUrl}}/api/users
+Authorization: Bearer {{adminToken}}
+Accept: application/json
+
+### FLUXO 4 - editar usuario (Admin)
+PUT {{baseUrl}}/api/users/{{userId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "Nome atualizado",
+  "role": "User",
+  "isActive": true
+}
+
+### FLUXO 4 - criar artista (Admin)
+POST {{baseUrl}}/api/artists
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "Irmãs de Pau",
+  "biography": "Biografia do artista",
+  "photoUrl": "https://example.com/artist.jpg"
+}
+
+### FLUXO 4 - editar artista (Admin)
+PUT {{baseUrl}}/api/artists/{{artistId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "Irmã de Pau",
+  "biography": "Biografia atualizada",
+  "photoUrl": "https://example.com/artist-updated.jpg"
+}
+
+### FLUXO 4 - criar album (Admin)
+POST {{baseUrl}}/api/albums
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "title": "Nome do album",
+  "artistId": {{artistId}},
+  "releaseDate": "2026-01-01",
+  "coverUrl": null
+}
+
+### FLUXO 4 - editar album (Admin)
+PUT {{baseUrl}}/api/albums/{{albumId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "title": "Album atualizado",
+  "artistId": {{artistId}},
+  "releaseDate": "2026-02-01",
+  "coverUrl": null
+}
+
+### FLUXO 4 - enviar capa de album (Admin)
+POST {{baseUrl}}/api/albums/{{albumId}}/cover
+Authorization: Bearer {{adminToken}}
+Content-Type: multipart/form-data; boundary=ViSahBoundary
+
+--ViSahBoundary
+Content-Disposition: form-data; name="image"; filename="cover.jpg"
+Content-Type: image/jpeg
+
+< ./imgs.jpg
+--ViSahBoundary--
+
+### FLUXO 4 - criar genero (Admin)
+POST {{baseUrl}}/api/genres
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "Amor"
+}
+
+### FLUXO 4 - editar genero (Admin)
+PUT {{baseUrl}}/api/genres/{{genreId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "Genero atualizado"
+}
+
+### FLUXO 4 - criar mood (Admin)
+POST {{baseUrl}}/api/moods
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "Triste"
+}
+
+### FLUXO 4 - editar mood (Admin)
+PUT {{baseUrl}}/api/moods/{{moodId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "Mood atualizado"
+}
+
+### FLUXO 4 - cadastrar faixa (Admin)
+POST {{baseUrl}}/api/tracks
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "title": "Nome da faixa",
+  "artistId": {{artistId}},
+  "albumId": {{albumId}},
+  "genreId": {{genreId}},
+  "moodId": {{moodId}},
+  "durationSeconds": 180,
+  "audioUrl": "https://example.com/audio.mp3",
+  "coverUrl": null
+}
+
+### FLUXO 4 - editar faixa (Admin)
+PUT {{baseUrl}}/api/tracks/{{trackId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "title": "Faixa atualizada",
+  "artistId": {{artistId}},
+  "albumId": {{albumId}},
+  "genreId": {{genreId}},
+  "moodId": {{moodId}},
+  "durationSeconds": 200,
+  "audioUrl": "https://example.com/audio-updated.mp3",
+  "coverUrl": null
+}
+
+### FLUXO 4 - enviar capa de faixa (Admin)
+# Troque o caminho do arquivo pela imagem local que deseja enviar.
+POST {{baseUrl}}/api/tracks/{{trackId}}/cover
+Authorization: Bearer {{adminToken}}
+Content-Type: multipart/form-data; boundary=ViSahBoundary
+
+--ViSahBoundary
+Content-Disposition: form-data; name="image"; filename="cover.jpg"
+Content-Type: image/jpeg
+
+< ./imgs.jpg
+--ViSahBoundary--
+
+### FLUXO 4 - enviar arquivo de audio da faixa (Admin)
+# Troque o caminho pelo arquivo de audio local. Limite configurado: 50 MB.
+POST {{baseUrl}}/api/tracks/{{trackId}}/audio
+Authorization: Bearer {{adminToken}}
+Content-Type: multipart/form-data; boundary=ViSahAudioBoundary
+
+--ViSahAudioBoundary
+Content-Disposition: form-data; name="audio"; filename="track.mp3"
+Content-Type: audio/mpeg
+
+< ./sample.mp3
+--ViSahAudioBoundary--
+
+### FLUXO 5 - limpar dados de teste: exclua faixa antes de album/artista/genero/mood
+DELETE {{baseUrl}}/api/tracks/{{trackId}}
+Authorization: Bearer {{adminToken}}
+
+### FLUXO 5 - excluir album depois das faixas
+DELETE {{baseUrl}}/api/albums/{{albumId}}
+Authorization: Bearer {{adminToken}}
+
+### FLUXO 5 - excluir artista depois dos albuns
+DELETE {{baseUrl}}/api/artists/{{artistId}}
+Authorization: Bearer {{adminToken}}
+
+### FLUXO 5 - excluir genero depois das faixas
+DELETE {{baseUrl}}/api/genres/{{genreId}}
+Authorization: Bearer {{adminToken}}
+
+### FLUXO 5 - excluir mood depois das faixas
+DELETE {{baseUrl}}/api/moods/{{moodId}}
+Authorization: Bearer {{adminToken}}
+
+### FLUXO 5 - desativar usuario de teste (execute por ultimo)
+DELETE {{baseUrl}}/api/users/{{userId}}
+Authorization: Bearer {{adminToken}}
